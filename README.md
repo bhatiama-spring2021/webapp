@@ -1,7 +1,6 @@
 # CSYE-6225 Spring 2021
 
 ## Technology Stack
-***
 1. [Node.js](https://nodejs.org/en/docs/)
 2. [Express.js](https://expressjs.com/en/starter/installing.html)
 3. Database: [MySQL](https://www.npmjs.com/package/mysql)
@@ -9,7 +8,6 @@
 4. Version Control: Git
 
 ## Prerequisites
-***
 For development, you will only need Node.js
 
 ### Node
@@ -41,7 +39,6 @@ If you need to update `npm`, you can run the following command:
     $ npm install npm -g
 
 ## Installing and Running Instructions
-***
 1. Clone the following git repository: git@github.com:bhatiama/webapp.git
 2. Navigate to webapp folder
 3. Run command `npm install` to install the required node modules
