@@ -1,0 +1,33 @@
+{
+  "name": "webapp",
+  "version": "1.0.0",
+  "description": "Updated README file!",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bhatiama/webapp.git"
+  },
+  "keywords": [
+    "node.js",
+    "sql",
+    "basic-auth"
+  ],
+  "author": "Mayur Bhatia",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bhatiama/webapp/issues"
+  },
+  "homepage": "https://github.com/bhatiama/webapp#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mysql": "^2.18.1",
+    "sequelize": "^6.5.0"
+  }
+}
