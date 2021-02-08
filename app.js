@@ -1,7 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const db = require("./src/loaders")
 
 const app = express();
 
@@ -17,11 +16,8 @@ app.use(bodyParser.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 
-
-// Use force:true in development
-db.sequelize.sync({force: true}).then(() => {
-    console.log('Resync the Database and if already exists Drop the database');
-}).catch(err => {err});
+//load database
+require("./src/loaders/database");
 
 // simple route
 app.get("/", (req, res) => {
