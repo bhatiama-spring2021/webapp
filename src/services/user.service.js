@@ -57,7 +57,7 @@ exports.updateUser = (req, res) => {
     });
 };
 
-// Get User Information by username
+// Get User Information by authentication
 exports.getUserByUsername = (req, res) => {
   User.findOne({
     where: {
@@ -66,13 +66,15 @@ exports.getUserByUsername = (req, res) => {
   })
     .then((user) => {
       if (!user) {
-        return res.status(404).send({ message: "User Not found." });
+        return res.status(404).send({ message: "User Not found in the database" });
       }
       res.status(200).send({
         id: user.user_id,
         username: user.username,
         first_name: user.first_name,
         last_name: user.last_name,
+        account_created: user.createdAt,
+        account_updated: user.updatedAt
       });
     })
     .catch((err) => {

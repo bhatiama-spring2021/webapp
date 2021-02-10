@@ -28,7 +28,7 @@ BasicAuth = (req, res, next) => {
 
             if (!passwordIsValid) {
                 return res.status(401).send({
-                    message: "Invalid Password!!"
+                    message: "Please check the Password!!"
                 });
             }
             // attach user to request object
