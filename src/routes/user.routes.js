@@ -12,7 +12,11 @@ module.exports = function (app) {
 
   app.post(
     "/v1/user",
-    [verifyUser.checkDuplicateEmail, verifyUser.checkPassword],
+    [
+    verifyUser.checkEmptyRequestBody,
+    verifyUser.checkDuplicateEmail, 
+    verifyUser.checkPassword
+    ],
     userService.createUser
   );
 };

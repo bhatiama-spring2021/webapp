@@ -13,6 +13,7 @@ module.exports = function (app) {
   app.put(
     "/v1/user/self",
     [
+      verifyUser.checkEmptyRequestBody,
       basicAuth.BasicAuth,
       verifyUser.checkEmailUpdate,
       verifyUser.checkPassword,

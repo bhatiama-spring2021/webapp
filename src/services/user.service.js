@@ -21,7 +21,7 @@ exports.createUser = (req, res) => {
       });
     })
     .catch((err) => {
-      res.status(500).send({ message: err.message });
+      res.status(400).send({ message: err.message });
     });
 };
 
