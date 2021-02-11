@@ -2,8 +2,14 @@ const config = require("../config/config");
 
 const db = {};
 
+let configDB = config.DB;
+
+if (process.env.NODE_ENV === "test") {
+  configDB = config.TESTDB;
+}
+
 const Sequelize = require("sequelize");
-const sequelize = new Sequelize(config.DB, config.USER, config.PASSWORD, {
+const sequelize = new Sequelize(configDB, config.USER, config.PASSWORD, {
   host: config.HOST,
   dialect: config.dialect,
 

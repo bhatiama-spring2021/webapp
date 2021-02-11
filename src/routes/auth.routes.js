@@ -23,6 +23,6 @@ module.exports = function (app) {
   app.get(
     "/v1/user/self",
     [basicAuth.BasicAuth],
-    userService.getUserByUsername
+    userService.getUserInformation
   );
 };

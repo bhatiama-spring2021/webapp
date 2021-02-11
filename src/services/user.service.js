@@ -16,8 +16,8 @@ exports.createUser = (req, res) => {
         username: user.username,
         first_name: user.first_name,
         last_name: user.last_name,
-        account_created: user.createdAt,
-        account_updated: user.updatedAt,
+        account_created: user.account_created,
+        account_updated: user.account_updated,
       });
     })
     .catch((err) => {
@@ -40,17 +40,7 @@ exports.updateUser = (req, res) => {
     }
   )
     .then(() => {
-      User.findOne({
-        where: {
-          username: req.user.username,
-        },
-      }).then((user) => {
-        res.send({
-          username: user.username,
-          firstname: user.first_name,
-          last_name: user.last_name,
-        });
-      });
+      res.status(204).send();
     })
     .catch((err) => {
       res.status(400).send({ message: err.message });
@@ -58,7 +48,7 @@ exports.updateUser = (req, res) => {
 };
 
 // Get User Information by authentication
-exports.getUserByUsername = (req, res) => {
+exports.getUserInformation = (req, res) => {
   User.findOne({
     where: {
       username: req.user.username,
@@ -66,36 +56,15 @@ exports.getUserByUsername = (req, res) => {
   })
     .then((user) => {
       if (!user) {
-        return res.status(404).send({ message: "User Not found in the database" });
+        return res.status(404).send({ message: "User not found in the database" });
       }
       res.status(200).send({
         id: user.user_id,
         username: user.username,
         first_name: user.first_name,
         last_name: user.last_name,
-        account_created: user.createdAt,
-        account_updated: user.updatedAt
-      });
-    })
-    .catch((err) => {
-      res.status(400).send({ message: err.message });
-    });
-};
-
-// Get User Information by user_id
-exports.getUserById = (req, res) => {
-  User.findByPk(req.params.id)
-    .then((user) => {
-      if (!user) {
-        return res.status(404).send({ message: "User Not found." });
-      }
-      res.status(200).send({
-        id: user.user_id,
-        username: user.username,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        account_created: user.createdAt,
-        account_updated: user.updatedAt,
+        account_created: user.account_created,
+        account_updated: user.account_updated
       });
     })
     .catch((err) => {
