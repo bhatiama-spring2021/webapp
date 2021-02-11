@@ -35,6 +35,9 @@ module.exports = (sequelize, Sequelize) => {
               isEmail: true
           }
         }
+      }, {
+        createdAt: "account_created",
+        updatedAt: "account_updated"
       });
     
       return User;

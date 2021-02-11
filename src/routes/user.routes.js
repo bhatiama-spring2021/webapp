@@ -12,9 +12,7 @@ module.exports = function (app) {
 
   app.post(
     "/v1/user",
-    [verifyUser.checkDuplicateEmail],
+    [verifyUser.checkDuplicateEmail, verifyUser.checkPassword],
     userService.createUser
   );
-
-  app.get("/v1/user/:id", userService.getUserById);
 };

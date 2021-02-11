@@ -4,7 +4,7 @@
   "description": "User management application in Node.js",
   "main": "app.js",
   "scripts": {
-    "test": "NODE_ENV=test mocha test/**/*.js",
+    "test": "NODE_ENV=test mocha --exit test/**/*.js",
     "start": "NODE_ENV=dev && node app.js"
   },
   "repository": {
