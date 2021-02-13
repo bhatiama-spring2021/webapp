@@ -39,6 +39,11 @@ module.exports = (sequelize, Sequelize) => {
         createdAt: "account_created",
         updatedAt: "account_updated"
       });
-    
+
+    User.associate = function(models) {
+      User.hasMany(models.Book, {
+          foreignKey: "user_id"
+      });
+    };
       return User;
 };

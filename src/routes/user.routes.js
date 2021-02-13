@@ -1,5 +1,6 @@
 const { verifyUser, basicAuth } = require("../validators");
 const userService = require("../services/user.service");
+const bookService = require("../services/book.service");
 
 module.exports = function (app) {
   app.use(function (req, res, next) {
@@ -18,5 +19,9 @@ module.exports = function (app) {
     verifyUser.checkPassword
     ],
     userService.createUser
+  );
+
+  app.get(
+    "/books", bookService.getAllBooks
   );
 };
