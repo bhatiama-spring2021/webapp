@@ -33,6 +33,8 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: false,
         validate: {
           notEmpty: true,
+          isDate: true,
+          isBefore: sequelize.fn('NOW')
         },
       },
       user_id: {

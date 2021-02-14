@@ -74,7 +74,7 @@ exports.deleteBookById = (req, res) => {
       } else if (book.user_id != req.user.user_id) {
         return res
           .status(401)
-          .send({ message: "Authorized User! Cannot delete book." });
+          .send({ message: "Unauthorized User! Cannot delete book." });
       }
       else {
         Book.destroy({

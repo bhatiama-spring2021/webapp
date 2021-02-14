@@ -1,4 +1,4 @@
-const { verifyUser, basicAuth } = require("../validators");
+const { verifyUser, basicAuth, verifyRequest, verifyBook } = require("../validators");
 const userService = require("../services/user.service");
 const bookService = require("../services/book.service");
 
@@ -14,10 +14,10 @@ module.exports = function (app) {
   app.put(
     "/v1/user/self",
     [
-      verifyUser.checkEmptyRequestBody,
+      verifyRequest.checkEmptyRequestBody,
       basicAuth.BasicAuth,
       verifyUser.checkEmailUpdate,
-      verifyUser.checkPassword,
+      verifyUser.checkUpdateFields
     ],
     userService.updateUser
   );
@@ -30,7 +30,12 @@ module.exports = function (app) {
 
   app.post(
     "/books",
-    [basicAuth.BasicAuth],
+    [
+      verifyRequest.checkEmptyRequestBody,
+      basicAuth.BasicAuth,
+      verifyBook.checkEmptyValues,
+      verifyBook.checkDuplicateISBN
+    ],
     bookService.createBook
   );
 

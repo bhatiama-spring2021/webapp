@@ -1,4 +1,4 @@
-const { verifyUser, basicAuth } = require("../validators");
+const { verifyUser, verifyRequest, verifyBook } = require("../validators");
 const userService = require("../services/user.service");
 const bookService = require("../services/book.service");
 
@@ -14,9 +14,11 @@ module.exports = function (app) {
   app.post(
     "/v1/user",
     [
-    verifyUser.checkEmptyRequestBody,
+    verifyRequest.checkEmptyRequestBody,
     verifyUser.checkDuplicateEmail, 
-    verifyUser.checkPassword
+    verifyUser.checkPassword,
+    verifyUser.checkFirstName,
+    verifyUser.checkLastName
     ],
     userService.createUser
   );
