@@ -1,6 +1,7 @@
 const db = require("../loaders/database");
 const User = db.user;
 var bcrypt = require("bcryptjs");
+const { Op } = require("sequelize");
 
 // Create new User
 exports.createUser = (req, res) => {
@@ -27,18 +28,21 @@ exports.createUser = (req, res) => {
 
 // Update User Infomation
 exports.updateUser = (req, res) => {
-  User.update(
-    {
-      first_name: req.body.first_name,
-      last_name: req.body.last_name,
-      password: bcrypt.hashSync(req.body.password, 8),
+  const updateFields = {};
+  if (req.body.first_name) {
+    updateFields["first_name"] = req.body.first_name;
+  }
+  if (req.body.last_name) {
+    updateFields["last_name"] = req.body.last_name;
+  }
+  if (req.body.password) {
+    updateFields["password"] = bcrypt.hashSync(req.body.password, 8);
+  }
+  User.update(updateFields, {
+    where: {
+      username: req.user.username,
     },
-    {
-      where: {
-        username: req.user.username,
-      },
-    }
-  )
+  })
     .then(() => {
       res.status(204).send();
     })
@@ -56,7 +60,9 @@ exports.getUserInformation = (req, res) => {
   })
     .then((user) => {
       if (!user) {
-        return res.status(404).send({ message: "User not found in the database" });
+        return res
+          .status(404)
+          .send({ message: "User not found in the database" });
       }
       res.status(200).send({
         id: user.user_id,
@@ -64,7 +70,7 @@ exports.getUserInformation = (req, res) => {
         first_name: user.first_name,
         last_name: user.last_name,
         account_created: user.account_created,
-        account_updated: user.account_updated
+        account_updated: user.account_updated,
       });
     })
     .catch((err) => {
