@@ -46,7 +46,7 @@ exports.getBookById = (req, res) => {
       if (!book) {
         return res
           .status(404)
-          .send({ message: "Book not found in the database" });
+          .send({ message: "No Book found with the given ID" });
       }
       res.status(200).send({
         id: book.book_id,
@@ -70,11 +70,11 @@ exports.deleteBookById = (req, res) => {
       if (!book) {
         return res
           .status(404)
-          .send({ message: "Book not found in the database" });
+          .send({ message: "Cannot delete! No Book found with the given ID" });
       } else if (book.user_id != req.user.user_id) {
         return res
           .status(401)
-          .send({ message: "Unauthorized User! Cannot delete book." });
+          .send({ message: "Cannot delete! Unauthorized User." });
       }
       else {
         Book.destroy({
@@ -100,7 +100,7 @@ exports.getAllBooks = (req, res) => {
         if (!book) {
           return res
             .status(404)
-            .send({ message: "No books found in the database" });
+            .send({ message: "No books available" });
         }
         res.status(200).send(book);
       })
