@@ -20,10 +20,16 @@ checkEmptyValues = (req, res, next) => {
   next();
 };
 
+/**
+ * Same user cannot create a new book record with same ISBN, but 
+ * a different user can create a new book record with a that same ISBN
+ */
+
 checkDuplicateISBN = (req, res, next) => {
   Book.findOne({
     where: {
       isbn: req.body.isbn,
+      user_id: req.user.user_id
     },
   }).then((book) => {
     if (book) {
