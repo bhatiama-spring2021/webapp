@@ -39,12 +39,6 @@ module.exports = function (app) {
     bookService.createBook
   );
 
-  app.get(
-    "/books/:id",
-    [basicAuth.BasicAuth],
-    bookService.getBookById
-  );
-
   app.delete(
     "/books/:id",
     [basicAuth.BasicAuth],

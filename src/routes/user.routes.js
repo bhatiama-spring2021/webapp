@@ -24,6 +24,11 @@ module.exports = function (app) {
   );
 
   app.get(
+    "/books/:id",
+    bookService.getBookById
+  );
+
+  app.get(
     "/books", bookService.getAllBooks
   );
 };
