@@ -61,7 +61,7 @@ checkEmailUpdate = (req, res, next) => {
 checkFirstName = (req, res, next) => {
   if (!req.body.first_name || req.body.first_name === "") {
     return res.status(400).send({
-      message: "First Name cannot be empty",
+      message: "First Name cannot be blank",
     });
   } else if (!nameRegex.test(req.body.first_name)) {
     return res.status(400).send({
@@ -74,7 +74,7 @@ checkFirstName = (req, res, next) => {
 checkLastName = (req, res, next) => {
   if (!req.body.last_name || req.body.last_name === "") {
     return res.status(400).send({
-      message: "Last Name cannot be empty",
+      message: "Last Name cannot be blank",
     });
   } else if (!nameRegex.test(req.body.last_name)) {
     return res.status(400).send({
@@ -87,7 +87,7 @@ checkLastName = (req, res, next) => {
 checkUpdateFields = (req, res, next) => {
   if (req.body.password === "") {
     return res.status(400).send({
-      message: "Password cannot be empty",
+      message: "Password cannot be blank",
     });
   } else if (req.body.password && !passRegex.test(req.body.password)) {
     return res.status(400).send({
@@ -97,7 +97,7 @@ checkUpdateFields = (req, res, next) => {
   }
   if (req.body.first_name === "") {
     return res.status(400).send({
-      message: "First Name cannot be empty",
+      message: "First Name cannot be blank",
     });
   } else if (req.body.first_name && !nameRegex.test(req.body.first_name)) {
     return res.status(400).send({
@@ -106,7 +106,7 @@ checkUpdateFields = (req, res, next) => {
   }
   if (req.body.last_name === "") {
     return res.status(400).send({
-      message: "Last Name cannot be empty",
+      message: "Last Name cannot be blank",
     });
   } else if (req.body.last_name && !nameRegex.test(req.body.last_name)) {
     return res.status(400).send({

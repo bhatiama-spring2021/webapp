@@ -34,7 +34,7 @@ checkDuplicateISBN = (req, res, next) => {
   }).then((book) => {
     if (book) {
       res.status(400).send({
-        message: "Duplicate ISBN! Cannot create new book",
+        message: "Duplicate ISBN! Cannot add new book",
       });
       return;
     }
