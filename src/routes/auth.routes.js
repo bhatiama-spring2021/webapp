@@ -34,7 +34,8 @@ module.exports = function (app) {
       verifyRequest.checkEmptyRequestBody,
       basicAuth.BasicAuth,
       verifyBook.checkEmptyValues,
-      verifyBook.checkDuplicateISBN
+      verifyBook.checkISBN,
+      verifyBook.checkPublishedDate
     ],
     bookService.createBook
   );

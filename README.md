@@ -99,4 +99,81 @@ Run the following commands to create the required databases:
   }
   ```
   - Response: 201 (Created)
+  ```
+  {
+    "id": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+    "first_name": "Jane",
+    "last_name": "Doe",
+    "username": "jane.doe@example.com",
+    "account_created": "2016-08-29T09:12:33.001Z",
+    "account_updated": "2016-08-29T09:12:33.001Z"
+  }
+  ```
+
+- ### POST /books
+  - Request body: 
+  ```
+  {
+    "title": "Computer Networks",
+    "author": "Andrew S. Tanenbaum",
+    "isbn": "978-0132126953",
+    "published_date": "May, 2020"
+  }
+  ```
+  - Response: 201 (Created)
+  ```
+  {
+    "id": "d6193106-a192-46db-aae9-f151004ee453",
+    "title": "Computer Networks",
+    "author": "Andrew S. Tanenbaum",
+    "isbn": "978-0132126953",
+    "published_date": "May, 2020",
+    "book_created": "2016-08-29T09:12:33.001Z",
+    "user_id": "d290f1ee-6c54-4b01-90e6-d701748f0851"
+  }
+  ```
+- ### DELETE /books/{id}
+  - Request param: id 
+  ```
+    example: d6193106-a192-46db-aae9-f151004ee453
+  ```
+  - Response: 204 (No Content)
+
+
+- ### GET /books/{id}
+  - Request param: id 
+  ```
+    example: d6193106-a192-46db-aae9-f151004ee453
+  ```
+  - Response: 200 (OK)
+  ```
+  {
+    "id": "d6193106-a192-46db-aae9-f151004ee453",
+    "title": "Computer Networks",
+    "author": "Andrew S. Tanenbaum",
+    "isbn": "978-0132126953",
+    "published_date": "May, 2020",
+    "book_created": "2016-08-29T09:12:33.001Z",
+    "user_id": "d290f1ee-6c54-4b01-90e6-d701748f0851"
+  }
+  ```
+
+- ### GET /books/
+  - Request param: No parameters
+
+  - Response: 200 (OK)
+  ```
+  [
+    {
+      "id": "d6193106-a192-46db-aae9-f151004ee453",
+      "title": "Computer Networks",
+      "author": "Andrew S. Tanenbaum",
+      "isbn": "978-0132126953",
+      "published_date": "May, 2020",
+      "book_created": "2016-08-29T09:12:33.001Z",
+      "user_id": "d290f1ee-6c54-4b01-90e6-d701748f0851"
+    }
+  ]
+  ```
+
 

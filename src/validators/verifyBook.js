@@ -1,4 +1,6 @@
 const Book = require("../loaders/database").book;
+const isbnRegex = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/;
+const dateRegex = /^(Jan(uary)?|Feb(ruary)?|Mar(ch)?|Apr(il)?|May|Jun(e)?|Jul(y)?|Aug(ust)?|Sep(tember)?|Oct(ober)?|Nov(ember)?|Dec(ember)?)\s?\d{0,2},\s+\d{4}/
 
 checkEmptyValues = (req, res, next) => {
   const errorMessages = {};
@@ -25,7 +27,7 @@ checkEmptyValues = (req, res, next) => {
  * a different user can create a new book record with a that same ISBN
  */
 
-checkDuplicateISBN = (req, res, next) => {
+checkISBN = (req, res, next) => {
   Book.findOne({
     where: {
       isbn: req.body.isbn,
@@ -33,18 +35,32 @@ checkDuplicateISBN = (req, res, next) => {
     },
   }).then((book) => {
     if (book) {
-      res.status(400).send({
+      return res.status(400).send({
         message: "Duplicate ISBN! Cannot add new book",
       });
-      return;
+    }
+    else if(!isbnRegex.test(req.body.isbn)) {
+      return res.status(400).send({
+        message: "Invalid ISBN format! ISBN should a be 10 or 13 digits",
+      });
     }
     next();
   });
 };
 
+checkPublishedDate = (req, res, next) => {
+    if(!dateRegex.test(req.body.published_date)) {
+      return res.status(400).send({
+        message: "Published date should be in format: 'Month, Year' or 'Month Date, Year'"
+      });
+    }
+    next();
+};
+
 const verifyBook = {
   checkEmptyValues: checkEmptyValues,
-  checkDuplicateISBN: checkDuplicateISBN,
+  checkISBN: checkISBN,
+  checkPublishedDate: checkPublishedDate
 };
 
 module.exports = verifyBook;
