@@ -176,4 +176,26 @@ Run the following commands to create the required databases:
   ]
   ```
 
+- ### POST /books/{book_id}/image
+  - Request param: book_id* [string($uuid)]
+
+  - Request body: image [string($binary)]
+
+  - Response: 201 (Created)
+  ```
+  [
+    {
+      "file_name": "image.jpg",
+      "s3_object_name": "ad79de23-6820-482c-8d2b-d513885b0e17/9afdf82d-7e8e-4491-90d3-ff0499bf6afe/image.jpg",
+      "file_id": "9afdf82d-7e8e-4491-90d3-ff0499bf6afe",
+      "created_date": "2020-08-29T09:12:33.001Z",
+      "user_id": "d290f1ee-6c54-4b01-90e6-d701748f0851"
+    }
+  ]
+  ```
+
+- ### DELETE /books/{book_id}/image/{image_id}
+  - Request param: book_id* [string($uuid)], image_id* [string($uuid)]
+
+  - Response: 204 (No Content)
 

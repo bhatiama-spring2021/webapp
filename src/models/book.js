@@ -34,7 +34,7 @@ module.exports = (sequelize, Sequelize) => {
         validate: {
           notEmpty: true,
           isDate: true,
-          isBefore: sequelize.fn('NOW')
+          isBefore: sequelize.fn("NOW"),
         },
       },
       user_id: {
@@ -44,16 +44,26 @@ module.exports = (sequelize, Sequelize) => {
           key: "user_id",
         },
       },
+      book_images: {
+        type: Sequelize.JSON,
+        allowNull: true,
+      },
     },
     {
       createdAt: "book_created",
+    }
+  );
+
+  Book.associate = function (models) {
+    Book.belongsTo(models.User, {
+      foreignKey: "user_id",
     });
 
-Book.associate = function(models) {
-  Book.belongsTo(models.User, {
-    foreignKey: "user_id"
-  });
-};
+    Book.hasMany(models.File, {
+      foreignKey: "file_id",
+      onDelete: "CASCADE",
+    });
+  };
 
   return Book;
 };

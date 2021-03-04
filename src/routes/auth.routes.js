@@ -1,6 +1,13 @@
-const { verifyUser, basicAuth, verifyRequest, verifyBook } = require("../validators");
+const {
+  verifyUser,
+  basicAuth,
+  verifyRequest,
+  verifyBook,
+  verifyFile,
+} = require("../validators");
 const userService = require("../services/user.service");
 const bookService = require("../services/book.service");
+const fileService = require("../services/file.service");
 
 module.exports = function (app) {
   app.use(function (req, res, next) {
@@ -17,7 +24,7 @@ module.exports = function (app) {
       verifyRequest.checkEmptyRequestBody,
       basicAuth.BasicAuth,
       verifyUser.checkEmailUpdate,
-      verifyUser.checkUpdateFields
+      verifyUser.checkUpdateFields,
     ],
     userService.updateUser
   );
@@ -35,14 +42,22 @@ module.exports = function (app) {
       basicAuth.BasicAuth,
       verifyBook.checkEmptyValues,
       verifyBook.checkISBN,
-      verifyBook.checkPublishedDate
+      verifyBook.checkPublishedDate,
     ],
     bookService.createBook
   );
 
+  app.delete("/books/:id", [basicAuth.BasicAuth], bookService.deleteBookById);
+
+  app.post(
+    "/books/:book_id/image",
+    [basicAuth.BasicAuth, verifyFile.checkBookOwnership],
+    fileService.uploadImage
+  );
+
   app.delete(
-    "/books/:id",
-    [basicAuth.BasicAuth],
-    bookService.deleteBookById
+    "/books/:book_id/image/:image_id",
+    [basicAuth.BasicAuth, verifyFile.checkBookOwnership],
+    fileService.deleteImage
   );
 };

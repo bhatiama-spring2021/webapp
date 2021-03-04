@@ -1,4 +1,4 @@
-const config = require("../config/config");
+const config = require("../config/db.config");
 
 const db = {};
 
@@ -36,5 +36,6 @@ db.sequelize = sequelize;
 
 db.user = require("../models/user")(sequelize, Sequelize);
 db.book = require("../models/book")(sequelize, Sequelize);
+db.file = require("../models/file")(sequelize, Sequelize);
 
 module.exports = db;
