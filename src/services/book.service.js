@@ -1,6 +1,9 @@
 const db = require("../loaders/database");
 const User = db.user;
 const Book = db.book;
+const File = db.file;
+const s3 = require("../config/s3.config");
+const deleteParams = s3.deleteParams;
 
 // Create new book
 exports.createBook = (req, res) => {
@@ -30,6 +33,7 @@ exports.createBook = (req, res) => {
             published_date: book.published_date,
             book_created: book.book_created,
             user_id: book.user_id,
+            book_images: book.book_images || [],
           });
         })
         .catch((err) => {
@@ -56,6 +60,7 @@ exports.getBookById = (req, res) => {
         published_date: book.published_date,
         book_created: book.book_created,
         user_id: book.user_id,
+        book_images: book.book_images || [],
       });
     })
     .catch((err) => {
@@ -65,48 +70,59 @@ exports.getBookById = (req, res) => {
 
 // Delete book by ID
 exports.deleteBookById = (req, res) => {
-  Book.findByPk(req.params.id)
+  Book.findByPk(req.params.id).then((book) => {
+    if (!book) {
+      return res
+        .status(404)
+        .send({ message: "Cannot delete! No Book found with the given ID" });
+    } else if (book.user_id != req.user.user_id) {
+      return res
+        .status(401)
+        .send({ message: "Cannot delete! Unauthorized User." });
+    } else {
+      File.findAll({
+        raw: true,
+        where: {
+          book_id: req.params.id,
+        },
+      }).then((files) => {
+        for (let file of files) {
+          deleteParams.Key = file.s3_object_name;
+          s3.s3Client.deleteObject(deleteParams, (err) => {
+            if (err) {
+              return res.status(400).send({
+                message: "Unable to delete image from s3" + err,
+              });
+            }
+          });
+        }
+        Book.destroy({
+          where: {
+            book_id: req.params.id,
+            user_id: req.user.user_id,
+          },
+        })
+          .then(() => {
+            res.status(204).send();
+          })
+          .catch((err) => {
+            res.status(400).send({ message: err.message });
+          });
+      });
+    }
+  });
+};
+
+// Get all books
+exports.getAllBooks = (req, res) => {
+  Book.findAll({ raw: true })
     .then((book) => {
       if (!book) {
-        return res
-          .status(404)
-          .send({ message: "Cannot delete! No Book found with the given ID" });
-      } else if (book.user_id != req.user.user_id) {
-        return res
-          .status(401)
-          .send({ message: "Cannot delete! Unauthorized User." });
+        return res.status(404).send({ message: "No books available" });
       }
-      else {
-        Book.destroy({
-            where: {
-                book_id: req.params.id,
-                user_id: req.user.user_id
-            }
-        })
-        .then(()=>{
-            res.status(204).send();
-        })
-      }
+      res.status(200).send(book);
     })
     .catch((err) => {
       res.status(400).send({ message: err.message });
     });
 };
-
-// Get all books
-exports.getAllBooks = (req, res) => {
-    Book.findAll({raw: true})
-      .then((book) => {
-        if (!book) {
-          return res
-            .status(404)
-            .send({ message: "No books available" });
-        }
-        res.status(200).send(book);
-      })
-      .catch((err) => {
-        res.status(400).send({ message: err.message });
-      });
-  };
-
-
