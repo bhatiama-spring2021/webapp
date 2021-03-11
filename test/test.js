@@ -12,7 +12,7 @@ const testUser = {
 // Test auth /GET route
 describe("Test GET /v1/user/self", function () {
   it("should return status 200", function (done) {
-    nock("http://localhost:8080")
+    nock("/")
       .get("/v1/user/self")
       .reply(200, { message: "success" });
 
