@@ -1,27 +1,25 @@
 const app = require("../app");
 const chai = require("chai");
-const request = require("supertest");
 const should = chai.should();
-const nock = require("nock");
+const httpMocks = require('node-mocks-http');
+const { verifyUser } = require("../src/validators");
 
-const testUser = {
-  username: "test@gmail.com",
-  password: "Test@1234",
-};
+const request = httpMocks.createRequest({
+  body: {
+  password: "test1234",
+  }
+});
 
-// Test auth /GET route
-describe("Test GET /v1/user/self", function () {
-  it("should return status 200", function (done) {
-    nock("/")
-      .get("/v1/user/self")
-      .reply(200, { message: "success" });
+let response = httpMocks.createResponse();
 
-    request(app)
-      .get("/v1/user/self")
-      .auth(testUser.username, testUser.password, { type: "basic" })
-      .end(function (err, res) {
-        res.status.should.be.equal(200);
-        done();
-      });
+describe("Test password: test1234", function () {
+  it("should return status 400 & message: Password too weak!", function(done) {
+    const next = function() {done();}
+    verifyUser.checkPassword(request, response, next);
+    const message = response._getData().message;
+    const expectedMessage = "Password is too weak!"
+    message.should.include(expectedMessage);
+    response.statusCode.should.be.equal(400);
+    done();
   });
 });
