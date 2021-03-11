@@ -12,7 +12,7 @@
 
 ## Prerequisites
 
-For development, you will only need Node.js
+For development, you will need Node.js
 
 ### Node
 
