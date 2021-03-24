@@ -12,14 +12,16 @@ const logger = log.getLogger('logs');
 // Create new book
 exports.createBook = (req, res) => {
   Metrics.increment('book.POST.createBook');
-  logger.info("create book");
+  logger.info("create book api call");
   let timer = new Date();
 
+  let db_timer = new Date();
   User.findOne({
     where: {
       username: req.user.username,
     },
   }).then((user) => {
+    Metrics.timing('book.POST.dBfindUser',db_timer);
     if (!user) {
       logger.error("user not found");
       return res
@@ -35,7 +37,7 @@ exports.createBook = (req, res) => {
         user_id: user.user_id,
       })
         .then((book) => {
-          Metrics.timing('book.POST.dbcreateBook',db_timer);
+          Metrics.timing('book.POST.dBcreateBook',db_timer);
           res.status(201).send({
             id: book.book_id,
             title: book.title,
@@ -49,6 +51,7 @@ exports.createBook = (req, res) => {
           Metrics.timing('book.POST.createBook',timer);
         })
         .catch((err) => {
+          logger.error("book not created: " + err.message);
           res.status(400).send({ message: err.message });
         });
     }
@@ -57,9 +60,16 @@ exports.createBook = (req, res) => {
 
 // Get book by ID
 exports.getBookById = (req, res) => {
+  Metrics.increment('book.GET.getBookById');
+  logger.info("Get book by ID api call");
+  let timer = new Date();
+
+  let db_timer = new Date();
   Book.findByPk(req.params.id)
     .then((book) => {
+      Metrics.timing('book.POST.dBgetBookById',db_timer);
       if (!book) {
+        logger.error("No book found with the given ID");
         return res
           .status(404)
           .send({ message: "No Book found with the given ID" });
@@ -74,40 +84,55 @@ exports.getBookById = (req, res) => {
         user_id: book.user_id,
         book_images: book.book_images || [],
       });
+      Metrics.timing('book.POST.getBookById',timer);
     })
     .catch((err) => {
+      logger.error("Error finding the book: " + err.message);
       res.status(400).send({ message: err.message });
     });
 };
 
 // Delete book by ID
 exports.deleteBookById = (req, res) => {
+  Metrics.increment('book.DELETE.deleteBookById');
+  logger.info("Delete book by ID api call");
+  let timer = new Date();
+  let db_timer = new Date();
   Book.findByPk(req.params.id).then((book) => {
+    Metrics.timing('book.DELETE.dBfindBookByPk',db_timer);
     if (!book) {
+      logger.error("Cannot delete! No Book found with the given ID");
       return res
         .status(404)
         .send({ message: "Cannot delete! No Book found with the given ID" });
     } else if (book.user_id != req.user.user_id) {
+      logger.error("Cannot delete! Unauthorized User.");
       return res
         .status(401)
         .send({ message: "Cannot delete! Unauthorized User." });
     } else {
+      let db_timer_file = new Date();
       File.findAll({
         raw: true,
         where: {
           book_id: req.params.id,
         },
       }).then((files) => {
+        Metrics.timing('book.DELETE.dBfindAllFiles',db_timer_file);
+        let s3_timer = new Date();
         for (let file of files) {
           deleteParams.Key = file.s3_object_name;
           s3.s3Client.deleteObject(deleteParams, (err) => {
             if (err) {
+              logger.error("Unable to delete image from s3: "+ err);
               return res.status(400).send({
                 message: "Unable to delete image from s3" + err,
               });
             }
           });
         }
+        Metrics.timing('book.DELETE.s3deleteAllFiles',s3_timer);
+        let db_timer = new Date();
         Book.destroy({
           where: {
             book_id: req.params.id,
@@ -115,7 +140,10 @@ exports.deleteBookById = (req, res) => {
           },
         })
           .then(() => {
+            Metrics.timing('book.DELETE.dBdeleteBookById',db_timer);
             res.status(204).send();
+
+            Metrics.timing('book.DELETE.deleteBookById',timer);
           })
           .catch((err) => {
             res.status(400).send({ message: err.message });
@@ -127,12 +155,19 @@ exports.deleteBookById = (req, res) => {
 
 // Get all books
 exports.getAllBooks = (req, res) => {
+  Metrics.increment('book.GET.getAllBooks');
+  logger.info("Get all books api call");
+  let timer = new Date();
+  let db_timer = new Date();
   Book.findAll({ raw: true })
     .then((book) => {
+      Metrics.timing('book.GET.dBfindAllBooks',db_timer);
       if (!book) {
+        logger.error("No books available");
         return res.status(404).send({ message: "No books available" });
       }
       res.status(200).send(book);
+      Metrics.timing('book.GET.getAllBooks',timer);
     })
     .catch((err) => {
       res.status(400).send({ message: err.message });

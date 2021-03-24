@@ -1,11 +1,14 @@
 const db = require("../loaders/database");
 const User = db.user;
+const log = require("../../logs");
+const logger = log.getLogger('logs');
 
 const passRegex = /^(?=.*?[A-Z])(?=(.*[a-z]){1,})(?=(.*[\d]){1,})(?=(.*[\W]){1,})(?!.*\s).{8,}$/;
 const nameRegex = /^[a-z ,.'-]+$/i;
 
 checkDuplicateEmail = (req, res, next) => {
   if (!req.body.username) {
+    logger.error("400: Blank username error");
     return res.status(400).send({
       message: "Cannot Create account! Username cannot be blank",
     });
@@ -16,6 +19,7 @@ checkDuplicateEmail = (req, res, next) => {
     },
   }).then((user) => {
     if (user) {
+      logger.error("400: Duplicate username error");
       res.status(400).send({
         message: "Cannot Create account! Username is already in use!",
       });
@@ -27,10 +31,12 @@ checkDuplicateEmail = (req, res, next) => {
 
 checkPassword = (req, res, next) => {
   if (!req.body.password || req.body.password === "") {
+    logger.error("400: Blank password error");
     return res.status(400).send({
       message: "Password cannot be empty",
     });
   } else if (!passRegex.test(req.body.password)) {
+    logger.error("400: Weak password error");
     return res.status(400).send({
       message:
         "Password is too weak! Please make sure password has uppercase letters, lowercase letters, numbers, and special characters.",
@@ -49,6 +55,7 @@ checkEmailUpdate = (req, res, next) => {
       (req.body.username && req.body.username != req.user.username) ||
       req.body.username === ""
     ) {
+      logger.error("400: Updating username field error");
       res.status(400).send({
         message: "Username cannot be updated",
       });
@@ -60,10 +67,12 @@ checkEmailUpdate = (req, res, next) => {
 
 checkFirstName = (req, res, next) => {
   if (!req.body.first_name || req.body.first_name === "") {
+    logger.error("400: Blank first name error");
     return res.status(400).send({
       message: "First Name cannot be blank",
     });
   } else if (!nameRegex.test(req.body.first_name)) {
+    logger.error("400: Invalid first name error");
     return res.status(400).send({
       message: "Invalid First Name",
     });
@@ -73,10 +82,12 @@ checkFirstName = (req, res, next) => {
 
 checkLastName = (req, res, next) => {
   if (!req.body.last_name || req.body.last_name === "") {
+    logger.error("400: Blank last name error");
     return res.status(400).send({
       message: "Last Name cannot be blank",
     });
   } else if (!nameRegex.test(req.body.last_name)) {
+    logger.error("400: Invalid last name error");
     return res.status(400).send({
       message: "Invalid Last Name",
     });
@@ -86,29 +97,35 @@ checkLastName = (req, res, next) => {
 
 checkUpdateFields = (req, res, next) => {
   if (req.body.password === "") {
+    logger.error("400: Blank password error");
     return res.status(400).send({
       message: "Password cannot be blank",
     });
   } else if (req.body.password && !passRegex.test(req.body.password)) {
+    logger.error("400: Weak password error");
     return res.status(400).send({
       message:
         "Password is too weak! Please make sure password has uppercase letters, lowercase letters, numbers, and special characters.",
     });
   }
   if (req.body.first_name === "") {
+    logger.error("400: Blank first name error");
     return res.status(400).send({
       message: "First Name cannot be blank",
     });
   } else if (req.body.first_name && !nameRegex.test(req.body.first_name)) {
+    logger.error("400: Invalid first name error");
     return res.status(400).send({
       message: "Invalid First Name",
     });
   }
   if (req.body.last_name === "") {
+    logger.error("400: Blank last name error");
     return res.status(400).send({
       message: "Last Name cannot be blank",
     });
   } else if (req.body.last_name && !nameRegex.test(req.body.last_name)) {
+    logger.error("400: Invalid last name error");
     return res.status(400).send({
       message: "Invalid Last Name",
     });
