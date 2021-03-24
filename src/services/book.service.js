@@ -4,19 +4,29 @@ const Book = db.book;
 const File = db.file;
 const s3 = require("../config/s3.config");
 const deleteParams = s3.deleteParams;
+var SDC = require('statsd-client');
+Metrics = new SDC({port: 8125});
+const log = require("../../logs");
+const logger = log.getLogger('logs');
 
 // Create new book
 exports.createBook = (req, res) => {
+  Metrics.increment('book.POST.createBook');
+  logger.info("create book");
+  let timer = new Date();
+
   User.findOne({
     where: {
       username: req.user.username,
     },
   }).then((user) => {
     if (!user) {
+      logger.error("user not found");
       return res
         .status(404)
         .send({ message: "User not found in the database" });
     } else {
+      let db_timer = new Date(); 
       Book.create({
         title: req.body.title,
         author: req.body.author,
@@ -25,6 +35,7 @@ exports.createBook = (req, res) => {
         user_id: user.user_id,
       })
         .then((book) => {
+          Metrics.timing('book.POST.dbcreateBook',db_timer);
           res.status(201).send({
             id: book.book_id,
             title: book.title,
@@ -35,6 +46,7 @@ exports.createBook = (req, res) => {
             user_id: book.user_id,
             book_images: book.book_images || [],
           });
+          Metrics.timing('book.POST.createBook',timer);
         })
         .catch((err) => {
           res.status(400).send({ message: err.message });
