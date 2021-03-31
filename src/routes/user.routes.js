@@ -29,6 +29,6 @@ module.exports = function (app) {
   );
 
   app.get(
-    "/book", bookService.getAllBooks
+    "/books", bookService.getAllBooks
   );
 };
