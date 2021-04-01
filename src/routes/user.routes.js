@@ -31,4 +31,8 @@ module.exports = function (app) {
   app.get(
     "/book", bookService.getAllBooks
   );
+
+  app.get("/healthstatus", (req, res) => {
+    res.status(200).send({status: "Healthy"});
+  });
 };
