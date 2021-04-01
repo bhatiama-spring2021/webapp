@@ -27,11 +27,6 @@ app.listen(PORT, () => {
 });
 
 // set routes
-
-app.get("/", (req, res) => {
-  res.status(200).send({message: "Welcome to CSYE6225"});
-});
-
 require("./src/routes/auth.routes")(app);
 require("./src/routes/user.routes")(app);
 
