@@ -29,7 +29,7 @@ module.exports = function (app) {
   );
 
   app.get(
-    "/book", bookService.getAllBooks
+    "/books", bookService.getAllBooks
   );
 
   app.get("/healthstatus", (req, res) => {
