@@ -50,8 +50,7 @@ exports.createBook = (req, res) => {
             Message: JSON.stringify({
               default: JSON.stringify({
                 dynamo_tablename: process.env.DYNAMO_DB_TABLE,
-                api_url:
-                  process.env.PROFILE_AWS + "." + process.env.NAME_DOMAIN,
+                api_url: process.env.PROFILE_AWS + "." + process.env.NAME_DOMAIN,
                 email_check_flag: "Book_Created",
                 book_id: book.book_id,
                 book_title: book.title,
@@ -60,9 +59,7 @@ exports.createBook = (req, res) => {
             }),
             TopicArn: process.env.SNS_TOPIC_ARN,
           };
-          logger.info(
-            `Message ${params.Message} is getting published on ${params.TopicArn}`
-          );
+
           var publishTextPromise = new AWS.SNS({
             apiVersion: "2010-03-31",
           })
@@ -74,7 +71,6 @@ exports.createBook = (req, res) => {
               logger.info(
                 `Message ${params.Message} published to the topic ${params.TopicArn}`
               );
-              logger.info("Data: " + data);
             })
             .catch((err) => {
               logger.error("Failed to send notification", err);
@@ -186,7 +182,7 @@ exports.deleteBookById = (req, res) => {
             Metrics.timing("book.DELETE.dBdeleteBookById", db_timer);
 
             AWS.config.update({
-              region: process.env.REGION,
+              region: "us-east-1",
             });
 
             var params = {
@@ -194,8 +190,7 @@ exports.deleteBookById = (req, res) => {
               Message: JSON.stringify({
                 default: JSON.stringify({
                   dynamo_tablename: process.env.DYNAMO_DB_TABLE,
-                  api_url:
-                    process.env.PROFILE_AWS + "." + process.env.NAME_DOMAIN,
+                  api_url: process.env.PROFILE_AWS + "." + process.env.NAME_DOMAIN,
                   email_check_flag: "Book_Deleted",
                   book_id: req.params.id,
                   book_title: book_title,
@@ -215,7 +210,9 @@ exports.deleteBookById = (req, res) => {
               logger.info(
                 `Message ${params.Message} published to the topic ${params.TopicArn}`
               );
-              res.send("Success");
+            })
+            .catch((err) => {
+              logger.error("Failed to send notification", err);
             });
 
             res.status(204).send();
