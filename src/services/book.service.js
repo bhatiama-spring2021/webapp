@@ -42,7 +42,7 @@ exports.createBook = (req, res) => {
           Metrics.timing('book.POST.dBcreateBook',db_timer);
           logger.info("Book Created - Send Notification started");
           AWS.config.update({
-            region: process.env.REGION
+            region: "us-east-1"
           });
 
           var params = {
