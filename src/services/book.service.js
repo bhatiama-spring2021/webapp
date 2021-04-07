@@ -1,4 +1,5 @@
 const db = require("../loaders/database");
+var AWS = require('aws-sdk');
 const User = db.user;
 const Book = db.book;
 const File = db.file;
