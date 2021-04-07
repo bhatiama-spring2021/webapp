@@ -8,6 +8,7 @@ var SDC = require('statsd-client');
 Metrics = new SDC({port: 8125});
 const log = require("../../logs");
 const logger = log.getLogger('logs');
+var book_title = "";
 
 // Create new book
 exports.createBook = (req, res) => {
@@ -38,6 +39,35 @@ exports.createBook = (req, res) => {
       })
         .then((book) => {
           Metrics.timing('book.POST.dBcreateBook',db_timer);
+
+          AWS.config.update({
+            region: process.env.REGION
+          });
+
+          var params = {
+            MessageStructure: 'json',
+            Message: JSON.stringify({
+              "default": JSON.stringify({
+                "dynamo_tablename": process.env.DYNAMO_DB_TABLE,
+                "api_url": process.env.PROFILE_AWS +"."+process.env.NAME_DOMAIN,
+                "email_check_flag": "Book_Created",
+                "book_id": book.book_id,
+                "book_title": book.title,
+                "username": req.user.username
+              }),
+            }),
+            TopicArn: process.env.SNS_TOPIC_ARN
+          };
+
+          var publishTextPromise = new AWS.SNS({
+            apiVersion: '2010-03-31'
+          }).publish(params).promise();
+
+          publishTextPromise.then((data) => {
+            logger.info(`Message ${params.Message} published to the topic ${params.TopicArn}`);
+            res.send("Success");
+          });
+
           res.status(201).send({
             id: book.book_id,
             title: book.title,
@@ -131,6 +161,7 @@ exports.deleteBookById = (req, res) => {
             }
           });
         }
+        book_title = book.title;
         Metrics.timing('book.DELETE.s3deleteAllFiles',s3_timer);
         let db_timer = new Date();
         Book.destroy({
@@ -141,8 +172,36 @@ exports.deleteBookById = (req, res) => {
         })
           .then(() => {
             Metrics.timing('book.DELETE.dBdeleteBookById',db_timer);
-            res.status(204).send();
 
+            AWS.config.update({
+              region: process.env.REGION
+            });
+  
+            var params = {
+              MessageStructure: 'json',
+              Message: JSON.stringify({
+                "default": JSON.stringify({
+                  "dynamo_tablename": process.env.DYNAMO_DB_TABLE,
+                  "api_url": process.env.PROFILE_AWS +"."+process.env.NAME_DOMAIN,
+                  "email_check_flag": "Book_Deleted",
+                  "book_id": req.params.id,
+                  "book_title": book_title,
+                  "username": req.user.username
+                }),
+              }),
+              TopicArn: process.env.SNS_TOPIC_ARN
+            };
+  
+            var publishTextPromise = new AWS.SNS({
+              apiVersion: '2010-03-31'
+            }).publish(params).promise();
+  
+            publishTextPromise.then((data) => {
+              logger.info(`Message ${params.Message} published to the topic ${params.TopicArn}`);
+              res.send("Success");
+            });
+
+            res.status(204).send();
             Metrics.timing('book.DELETE.deleteBookById',timer);
           })
           .catch((err) => {
