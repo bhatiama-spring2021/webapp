@@ -40,7 +40,7 @@ exports.createBook = (req, res) => {
       })
         .then((book) => {
           Metrics.timing('book.POST.dBcreateBook',db_timer);
-
+          logger.info("Book Created - Send Notification started");
           AWS.config.update({
             region: process.env.REGION
           });
@@ -59,14 +59,18 @@ exports.createBook = (req, res) => {
             }),
             TopicArn: process.env.SNS_TOPIC_ARN
           };
-
+          logger.info(`Message ${params.Message} is getting published on ${params.TopicArn}`);
           var publishTextPromise = new AWS.SNS({
             apiVersion: '2010-03-31'
           }).publish(params).promise();
 
           publishTextPromise.then((data) => {
             logger.info(`Message ${params.Message} published to the topic ${params.TopicArn}`);
+            logger.info("Data: "+ data);
             res.send("Success");
+          })
+          .catch(err => {
+            logger.error("Failed to send notification",err);
           });
 
           res.status(201).send({
