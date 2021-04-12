@@ -5,6 +5,10 @@ module.exports = {
     DB: process.env.RDS_DB_NAME || "csye6225",
     TESTDB: "testDB",
     dialect: "mysql",
+    dialectOptions: {
+        ssl: 'Amazon RDS',
+        rejectUnauthorized: true,
+    },
     pool: {
         max: 5,
         min: 0,
